@@ -22,7 +22,7 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react"
-import { getServiceDeskRequests, type ServiceDeskRequest } from "@/lib/auth"
+import { getServiceDeskRequests, type ServiceDeskRequest, deleteServiceDeskRequest } from "@/lib/auth"
 
 export function ServiceRequests() {
   const [requests, setRequests] = useState<ServiceDeskRequest[]>([])
@@ -46,6 +46,16 @@ export function ServiceRequests() {
     } finally {
       setLoading(false)
       setIsRefreshing(false)
+    }
+  }
+
+  async function deleteRequest(requestId: string) {
+    try {
+      await deleteServiceDeskRequest(requestId)
+      await fetchRequests()
+    } catch (err) {
+      console.error("Error deleting request:", err)
+      setError("Failed to delete request")
     }
   }
 
@@ -270,8 +280,9 @@ export function ServiceRequests() {
                           size="icon"
                           className="h-10 w-10 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive hover:bg-destructive/10"
                           onClick={(e) => {
+                            console.log("Request deleted" + request.issueId)
                             e.stopPropagation();
-                            // TODO: Add delete functionality
+                            deleteRequest(request.issueId)
                           }}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -339,7 +350,7 @@ export function ServiceRequests() {
                           className="h-8 w-8 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive hover:bg-destructive/10"
                           onClick={(e) => {
                             e.stopPropagation();
-                            // TODO: Add delete functionality
+                            deleteRequest(request.issueId)
                           }}
                         >
                           <Trash2 className="h-4 w-4" />

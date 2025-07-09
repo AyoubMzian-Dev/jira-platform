@@ -221,3 +221,60 @@ export async function getServiceDeskRequests(): Promise<ServiceDeskRequest[]> {
     return []
   }
 }
+
+/**
+ * Deletes a service desk request
+ * @param requestId - The issue key of the request to delete (e.g. "SD-123")
+ * @returns Promise<void>
+ * @throws Error if deletion fails
+ */
+export async function deleteServiceDeskRequest(requestId: string) {
+  try {
+    const cookieStore = await cookies()
+    const credentials = cookieStore.get("jira-auth")?.value
+
+    if (!credentials) {
+      throw new Error("Not authenticated")
+    }
+
+    // Validate requestId format
+    if (!requestId.match(/^[A-Z]+-\d+$/)) {
+      throw new Error("Invalid request ID format. Expected format: PROJECT-123")
+    }
+
+    console.log(`Deleting service desk request ${requestId}...`)
+    const response = await fetch(`https://jisr.marocpme.gov.ma/jira/rest/servicedeskapi/request/${requestId}/participant`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Basic ${credentials}`,
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        usernames: [] // Empty array to remove all participants
+      }),
+      // Add timeout to prevent hanging requests
+      signal: AbortSignal.timeout(10000) // 10 second timeout
+    })
+
+    if (response.status === 404) {
+      throw new Error(`Request ${requestId} not found`)
+    }
+
+    if (response.status === 403) {
+      throw new Error("You don't have permission to delete this request")
+    }
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error(`Failed to delete service desk request: ${response.status} ${response.statusText}`)
+      console.error(`Error details: ${errorText}`)
+      throw new Error(`Failed to delete service desk request: ${response.status} - ${errorText}`)
+    }
+
+    console.log(`Successfully deleted service desk request ${requestId}`)
+  } catch (error) {
+    console.error("Delete service desk request error:", error)
+    throw error // Re-throw to handle in UI
+  }
+}
