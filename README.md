@@ -2,7 +2,7 @@
 
 A modern, responsive web application built with Next.js 15 for managing Jira Service Desk requests. This platform provides an intuitive dashboard interface for viewing, managing, and tracking service desk tickets with real-time data visualization and advanced filtering capabilities.
 
-<img width="1413" alt="Screenshot 2025-07-09 at 19 47 50" src="https://github.com/user-attachments/assets/6e83ff0e-650b-477f-bec5-a497b360a213" />
+<img width="1413" alt="Screenshot 2025-07-09 at 20 21 36" src="https://github.com/user-attachments/assets/45e28477-8a10-41af-88c4-34aa006854eb" />
 
 ## 🚀 Features
 
